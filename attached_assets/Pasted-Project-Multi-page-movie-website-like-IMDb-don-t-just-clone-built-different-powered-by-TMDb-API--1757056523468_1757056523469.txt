@@ -1,0 +1,95 @@
+Project: Multi-page movie website like IMDb(don't just clone built different), powered by TMDb API.
+Project Name: CineVerse
+Website Name: CineVerse
+API Key: 2f0c4d355398a7cb7b60f0ffdb48222e
+
+🔹 Website Requirements
+1. Header
+
+Left side: website logo → CineVerseLogo.png(which i sended by file)
+
+Right side: a search bar
+
+Search method (with debouncing):
+
+Do not call API on every keystroke.
+
+Use debouncing with 800ms delay:
+
+If the user types fewer than 3 letters → no request is made.
+
+Once the user types 3+ letters and pauses for 800ms → make API call to /search/movie.
+
+If the user keeps typing before 800ms ends → cancel previous request and reset the timer.
+
+Display autocomplete dropdown list below the input with movie titles (and year).
+
+On clicking a result → redirect to the Movie Details page.
+
+2. Home Page
+
+Sections (from TMDb API):
+
+Popular Movies categorized by region:
+
+Hollywood (with_origin_country=US)
+
+Bollywood (with_origin_country=IN)
+
+Tollywood (with_origin_country=IN with Telugu/Tamil filters if possible).
+
+Trending Movies (Daily & Weekly) → from /trending/movie/day and /trending/movie/week.
+
+Show each movie as a card (poster, title, rating).
+
+On click → go to Movie Details page.
+
+Section: Popular Trailers → fetch from /movie/{id}/videos and display YouTube embeds in a slider/carousel.
+
+3. Movie Details Page
+
+For any selected movie (/movie/{id} + /movie/{id}/credits + /movie/{id}/videos):
+
+Poster
+
+Title
+
+Trailer (YouTube embed from /videos)
+
+Rating (vote_average)
+
+Storyline (overview)
+
+Genres (e.g., Action, Drama)
+
+Movie Length (runtime)
+
+Release Date
+
+Earnings (budget & revenue)
+
+Cast (top actors)
+
+Crew (Director, Writer, etc.)
+
+4. Technical Stack
+
+Frontend: Using React
+
+API Calls: Use TMDb API with given key.
+
+Image Handling: TMDb base URLs:
+
+Posters: https://image.tmdb.org/t/p/w500/{poster_path}
+
+Backdrops: https://image.tmdb.org/t/p/original/{backdrop_path}
+
+5. Extra Features
+
+Debounced search (800ms wait after typing stops).
+
+Pagination or infinite scroll for lists.
+
+Dark/Light mode toggle.
+
+Fully responsive (mobile + tab + desktop).
