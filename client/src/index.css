@@ -56,6 +56,10 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
@@ -96,4 +100,26 @@
 .smooth-scroll::-webkit-scrollbar-thumb {
   background: hsl(var(--primary));
   border-radius: 3px;
+}
+
+.typing-cursor {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.hero-blur {
+  backdrop-filter: blur(2px);
+}
+
+.prose {
+  max-width: none;
+}
+
+.prose p {
+  margin-bottom: 1.5rem;
+  line-height: 1.75;
 }

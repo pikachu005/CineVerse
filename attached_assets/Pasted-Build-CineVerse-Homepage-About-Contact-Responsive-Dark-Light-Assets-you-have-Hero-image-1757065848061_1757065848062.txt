@@ -1,0 +1,112 @@
+Build “CineVerse” – Homepage + About + Contact (Responsive, Dark/Light)
+
+Assets you have
+
+Hero image: [provide file path/URL here] (use this exact image)
+
+Logo image (icon only, no text): [provide file path/URL here]
+
+Requirements
+1) Hero (main home screen)
+
+Use the provided hero image as the full-bleed background.
+
+Always center the image; do not crop from the top in any device orientation (mobile/landscape/tablet/desktop).
+
+Apply a soft blur to the hero image (CSS filter or overlay blur) so overlaid text is readable.
+
+Overlay headline with a typing effect:
+
+Text: “Welcome to CineVerse – Your Gateway to the World of Cinema!”
+
+Animate like typewriter: type letter-by-letter.
+
+When the full sentence completes, hold for 5 seconds, then delete letter-by-letter, and loop forever.
+
+Smooth cursor/blink; performance-friendly (requestAnimationFrame or efficient JS).
+
+2) Header & Logo
+
+Use only the provided logo image (icon) — no “CineVerse” text in the header.
+
+Increase the logo image size so it’s visually prominent but still responsive.
+
+Sticky header on scroll, with subtle blur/backdrop and 12–16px padding.
+
+3) Footer
+
+Add a clean, centered footer with:
+
+© 2025 CineVerse. All rights reserved.
+
+Links: About | Contact
+
+Keep spacing generous and typography consistent; on mobile stack items vertically.
+
+4) About Us Section
+
+Add a section titled About CineVerse describing features of the movie site (discover movies across Hollywood/Bollywood/Tollywood, trending lists, trailers, ratings, storylines, cast & crew, genres, release dates, revenue, etc.).
+
+Include the line: “Powered by TMDB” (use the exact capitalization).
+
+Include “Developed by Ram Krishna Jha.”
+
+5) Contact Us Section
+
+Add a Contact form with fields:
+
+Name (text)
+
+Surname (text)
+
+Email (email)
+
+Message (multiline textarea)
+
+Send Message (primary button)
+
+Basic client-side validation (required fields, valid email). Show success/error states.
+
+6) Dark/Light Mode
+
+Implement a Dark/Light toggle button in the header:
+
+Animated and interactive (e.g., sun ↔ moon morph, smooth 250–400ms transition).
+
+Persist preference using localStorage.
+
+Respect prefers-color-scheme on first load.
+
+Ensure all components (hero text, footer, forms, links, buttons) adapt correctly to both modes with accessible contrast.
+
+7) Responsiveness & Accessibility
+
+Fully responsive (mobile-first). Breakpoints for ~375px, 768px, 1024px, 1280px.
+
+Keep hero headline legible on small screens (wrap text, clamp font sizes).
+
+Use semantic HTML (header, main, section, footer, nav, form, label).
+
+Keyboard-navigable; focus styles visible; aria labels for the theme toggle and typing headline.
+
+8) Implementation Hints
+
+Prefer CSS object-fit: cover with object-position: center top; to avoid top cropping.
+
+Typing effect can be vanilla JS; avoid heavy libraries. Make it pause 5s before backspacing.
+
+Use CSS utilities or Tailwind if available; otherwise standard CSS with variables for theme colors.
+
+No other layout/visual changes beyond what’s stated.
+
+9) Deliverables
+
+Home page with hero + typing loop, enlarged logo header, and footer.
+
+About section on the home page (or separate route/anchor).
+
+Contact section with working client-side validation.
+
+Dark/Light toggle with animation and saved preference.
+
+Pixel-perfect transparency preserved in images; hero never crops from top.
