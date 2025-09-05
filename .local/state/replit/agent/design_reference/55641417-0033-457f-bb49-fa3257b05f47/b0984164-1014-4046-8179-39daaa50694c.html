@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineVerse - Your Ultimate Movie Discovery Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                },
+                fontFamily: {
+                    sans: ["Inter", "system-ui", "sans-serif"],
+                }
+            },
+        }
+    };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --background: hsl(240 10% 3.9%);
+            --foreground: hsl(0 0% 98%);
+            --card: hsl(240 10% 3.9%);
+            --card-foreground: hsl(0 0% 98%);
+            --popover: hsl(240 10% 3.9%);
+            --popover-foreground: hsl(0 0% 98%);
+            --primary: hsl(45 93% 58%);
+            --primary-foreground: hsl(240 10% 3.9%);
+            --secondary: hsl(240 3.7% 15.9%);
+            --secondary-foreground: hsl(0 0% 98%);
+            --muted: hsl(240 3.7% 15.9%);
+            --muted-foreground: hsl(240 5% 64.9%);
+            --accent: hsl(45 93% 68%);
+            --accent-foreground: hsl(240 10% 3.9%);
+            --destructive: hsl(0 62.8% 30.6%);
+            --destructive-foreground: hsl(0 0% 98%);
+            --border: hsl(240 3.7% 15.9%);
+            --input: hsl(240 3.7% 15.9%);
+            --ring: hsl(45 93% 58%);
+            --radius: 0.75rem;
+        }
+        
+        [data-theme="light"] {
+            --background: hsl(0 0% 100%);
+            --foreground: hsl(240 10% 3.9%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(240 10% 3.9%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(240 10% 3.9%);
+            --primary: hsl(45 93% 58%);
+            --primary-foreground: hsl(240 10% 3.9%);
+            --secondary: hsl(240 4.8% 95.9%);
+            --secondary-foreground: hsl(240 5.9% 10%);
+            --muted: hsl(240 4.8% 95.9%);
+            --muted-foreground: hsl(240 3.8% 46.1%);
+            --accent: hsl(45 93% 68%);
+            --accent-foreground: hsl(240 10% 3.9%);
+            --destructive: hsl(0 84.2% 60.2%);
+            --destructive-foreground: hsl(0 0% 98%);
+            --border: hsl(240 5.9% 90%);
+            --input: hsl(240 5.9% 90%);
+            --ring: hsl(45 93% 58%);
+        }
+        
+        body {
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+        }
+        
+        .movie-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .movie-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .search-dropdown {
+            backdrop-filter: blur(8px);
+            background: hsla(var(--card) / 0.95);
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
+        }
+        
+        .smooth-scroll {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
+        }
+        
+        .smooth-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .smooth-scroll::-webkit-scrollbar-track {
+            background: hsl(var(--muted));
+            border-radius: 3px;
+        }
+        
+        .smooth-scroll::-webkit-scrollbar-thumb {
+            background: hsl(var(--primary));
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-background text-foreground">
+    <!-- @COMPONENT: Header [Logo, Search, Theme Toggle] -->
+    <header class="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <!-- @COMPONENT: Logo -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <!-- Using provided CineVerse logo as base64 or placeholder -->
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-gradient-to-r from-red-500 to-blue-500 rounded flex items-center justify-center">
+                                <i class="fas fa-film text-white text-sm"></i>
+                            </div>
+                            <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                                CineVerse
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Logo -->
+
+                <!-- @COMPONENT: SearchBar [Debounced search with autocomplete] -->
+                <div class="flex-1 max-w-2xl mx-8 relative">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            placeholder="Search movies, shows, people..." 
+                            class="w-full px-4 py-2 pl-10 pr-4 bg-input border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
+                            data-implementation="Implement debounced search with 800ms delay, minimum 3 characters"
+                        />
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+                    </div>
+                    
+                    <!-- Search Dropdown -->
+                    <div class="absolute top-full left-0 right-0 mt-2 bg-popover border border-border rounded-lg shadow-xl search-dropdown hidden max-h-96 overflow-y-auto z-50">
+                        <!-- @MAP: searchResults.map(movie => ( -->
+                        <div class="flex items-center p-3 hover:bg-muted cursor-pointer transition-colors" data-event="click:navigateToMovie">
+                            <img src="https://image.tmdb.org/t/p/w92/poster_placeholder.jpg" alt="Movie poster" class="w-12 h-16 object-cover rounded mr-3" data-mock-image="true"/>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-foreground" data-bind="movie.title">The Matrix</h4>
+                                <p class="text-sm text-muted-foreground" data-bind="movie.release_date.year">(1999)</p>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: SearchBar -->
+
+                <!-- @COMPONENT: ThemeToggle -->
+                <div class="flex items-center space-x-4">
+                    <button 
+                        id="theme-toggle"
+                        class="p-2 rounded-lg hover:bg-muted transition-colors"
+                        data-implementation="Toggle between light and dark themes"
+                    >
+                        <i class="fas fa-moon text-muted-foreground hover:text-foreground transition-colors"></i>
+                    </button>
+                </div>
+                <!-- @END_COMPONENT: ThemeToggle -->
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <main class="min-h-screen">
+        <!-- @COMPONENT: HeroSection [Featured Movie with Trailer] -->
+        <section class="relative h-[70vh] flex items-center justify-center overflow-hidden">
+            <!-- Hero movie backdrop with enhanced cinematic effect -->
+            <div class="absolute inset-0 hero-gradient">
+                <img 
+                    src="https://pixabay.com/get/g7a0117149f29cb281795d93625975bbc01bbb4906a7bbd16bc3ecbced01ad207e461c21b55539e3d103184b5875f3694_1280.jpg" 
+                    alt="Featured movie backdrop" 
+                    class="w-full h-full object-cover"
+                    data-mock-image="true"
+                    data-implementation="Use TMDb backdrop_path: https://image.tmdb.org/t/p/original/{backdrop_path}"
+                />
+            </div>
+            
+            <div class="relative z-10 container mx-auto px-4 lg:px-8">
+                <div class="max-w-2xl">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg" data-bind="featuredMovie.title">
+                        Discover Your Next <span class="text-primary">Favorite Film</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed" data-bind="featuredMovie.overview">
+                        Explore millions of movies, from blockbuster hits to hidden gems. Your ultimate cinema companion awaits.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="px-8 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center">
+                            <i class="fas fa-play mr-2"></i>
+                            Watch Trailer
+                        </button>
+                        <button class="px-8 py-3 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm border border-white/20">
+                            More Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: HeroSection -->
+
+        <!-- @COMPONENT: MovieSections [Popular by Region] -->
+        <section class="py-12 bg-background">
+            <div class="container mx-auto px-4 lg:px-8">
+                
+                <!-- Hollywood Movies Section -->
+                <div class="mb-12">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl md:text-3xl font-bold flex items-center">
+                            <span class="mr-3">🇺🇸</span>
+                            Popular in Hollywood
+                        </h2>
+                        <button class="text-primary hover:text-accent transition-colors font-medium">
+                            View All <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto smooth-scroll">
+                        <div class="flex space-x-4 pb-4" style="width: max-content;">
+                            <!-- @MAP: hollywoodMovies.map(movie => ( -->
+                            <div class="movie-card cursor-pointer" data-event="click:navigateToMovieDetails">
+                                <div class="w-48 flex-shrink-0">
+                                    <div class="relative group">
+                                        <!-- Movie poster with enhanced visual styling -->
+                                        <img 
+                                            src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=750" 
+                                            alt="Movie poster" 
+                                            class="w-full h-72 object-cover rounded-lg shadow-lg"
+                                            data-mock-image="true"
+                                            data-implementation="Use TMDb poster_path: https://image.tmdb.org/t/p/w500/{poster_path}"
+                                        />
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        <div class="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="flex items-center justify-between text-white">
+                                                <span class="flex items-center text-sm">
+                                                    <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                                    <span data-bind="movie.vote_average">8.2</span>
+                                                </span>
+                                                <button class="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors backdrop-blur-sm">
+                                                    <i class="fas fa-play text-sm"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <h3 class="font-semibold text-foreground truncate" data-bind="movie.title">The Dark Knight</h3>
+                                        <p class="text-sm text-muted-foreground" data-bind="movie.release_date.year">2008</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                            
+                            <!-- Repeat pattern for demonstration -->
+                            <div class="movie-card cursor-pointer">
+                                <div class="w-48 flex-shrink-0">
+                                    <div class="relative group">
+                                        <img 
+                                            src="https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=750" 
+                                            alt="Movie poster" 
+                                            class="w-full h-72 object-cover rounded-lg shadow-lg"
+                                            data-mock-image="true"
+                                        />
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        <div class="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="flex items-center justify-between text-white">
+                                                <span class="flex items-center text-sm">
+                                                    <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                                    <span>7.8</span>
+                                                </span>
+                                                <button class="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors backdrop-blur-sm">
+                                                    <i class="fas fa-play text-sm"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <h3 class="font-semibold text-foreground truncate">Inception</h3>
+                                        <p class="text-sm text-muted-foreground">2010</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="movie-card cursor-pointer">
+                                <div class="w-48 flex-shrink-0">
+                                    <div class="relative group">
+                                        <img 
+                                            src="https://pixabay.com/get/gadffce35ec9349dace00b962199f0085f3d7c5409a72aa8fece40752b5a1c283db4c3acee08d4cf67f9bf352899d0ed1cb8771599fbbbc767b2ee23ce2d85aaa_1280.jpg" 
+                                            alt="Movie poster" 
+                                            class="w-full h-72 object-cover rounded-lg shadow-lg"
+                                            data-mock-image="true"
+                                        />
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        <div class="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="flex items-center justify-between text-white">
+                                                <span class="flex items-center text-sm">
+                                                    <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                                    <span>9.0</span>
+                                                </span>
+                                                <button class="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors backdrop-blur-sm">
+                                                    <i class="fas fa-play text-sm"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <h3 class="font-semibold text-foreground truncate">Interstellar</h3>
+                                        <p class="text-sm text-muted-foreground">2014</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bollywood Movies Section -->
+                <div class="mb-12">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl md:text-3xl font-bold flex items-center">
+                            <span class="mr-3">🇮🇳</span>
+                            Popular in Bollywood
+                        </h2>
+                        <button class="text-primary hover:text-accent transition-colors font-medium">
+                            View All <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto smooth-scroll">
+                        <div class="flex space-x-4 pb-4" style="width: max-content;">
+                            <!-- Sample Bollywood movies -->
+                            <div class="movie-card cursor-pointer">
+                                <div class="w-48 flex-shrink-0">
+                                    <div class="relative group">
+                                        <img 
+                                            src="https://images.unsplash.com/photo-1596727147705-61a532a659bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=750" 
+                                            alt="Movie poster" 
+                                            class="w-full h-72 object-cover rounded-lg shadow-lg"
+                                            data-mock-image="true"
+                                        />
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        <div class="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="flex items-center justify-between text-white">
+                                                <span class="flex items-center text-sm">
+                                                    <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                                    <span>8.5</span>
+                                                </span>
+                                                <button class="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors backdrop-blur-sm">
+                                                    <i class="fas fa-play text-sm"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <h3 class="font-semibold text-foreground truncate">3 Idiots</h3>
+                                        <p class="text-sm text-muted-foreground">2009</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trending Movies Section -->
+                <div class="mb-12">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl md:text-3xl font-bold flex items-center">
+                            <span class="mr-3">🔥</span>
+                            Trending This Week
+                        </h2>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium">
+                                This Week
+                            </button>
+                            <button class="px-4 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium hover:bg-secondary transition-colors">
+                                Today
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <!-- @MAP: trendingMovies.map(movie => ( -->
+                        <div class="movie-card cursor-pointer">
+                            <div class="relative group">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1489599510373-66af1c8c7c2a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=750" 
+                                    alt="Movie poster" 
+                                    class="w-full h-64 md:h-72 object-cover rounded-lg shadow-lg"
+                                    data-mock-image="true"
+                                />
+                                <div class="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-bold">
+                                    #1
+                                </div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            </div>
+                            <div class="mt-3">
+                                <h3 class="font-semibold text-foreground truncate">Avatar: The Way of Water</h3>
+                                <p class="text-sm text-muted-foreground">2022</p>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+
+                <!-- Popular Trailers Section -->
+                <div class="mb-12">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl md:text-3xl font-bold flex items-center">
+                            <span class="mr-3">🎬</span>
+                            Popular Trailers
+                        </h2>
+                        <button class="text-primary hover:text-accent transition-colors font-medium">
+                            View All <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto smooth-scroll">
+                        <div class="flex space-x-6 pb-4" style="width: max-content;">
+                            <!-- @MAP: popularTrailers.map(trailer => ( -->
+                            <div class="flex-shrink-0 w-80">
+                                <div class="relative group cursor-pointer">
+                                    <div class="aspect-video bg-muted rounded-lg overflow-hidden">
+                                        <!-- YouTube embed placeholder -->
+                                        <div class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
+                                            <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                                            <button class="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-primary-foreground group-hover:scale-110 transition-transform z-10">
+                                                <i class="fas fa-play ml-1"></i>
+                                            </button>
+                                            <img 
+                                                src="https://pixabay.com/get/gd3496bfe48ede16d466a53248930c4ff7cd81c75e6fe6825689fca223d6d2afd253f8b9ca52fcdbcfe1985af553cc3803ee9e02574a571da8c3665e3b19e903a_1280.jpg" 
+                                                alt="Video thumbnail" 
+                                                class="absolute inset-0 w-full h-full object-cover"
+                                                data-mock-image="true"
+                                                data-implementation="Replace with YouTube embed or thumbnail from TMDb videos API"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <h3 class="font-semibold text-foreground" data-bind="trailer.name">Official Trailer</h3>
+                                        <p class="text-sm text-muted-foreground" data-bind="movie.title">Spider-Man: No Way Home</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        <!-- @END_COMPONENT: MovieSections -->
+
+        <!-- @COMPONENT: MovieDetailsModal [Modal for movie details] -->
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden" id="movie-details-modal">
+            <div class="container mx-auto px-4 py-8 h-full overflow-y-auto">
+                <div class="max-w-6xl mx-auto bg-card rounded-xl overflow-hidden">
+                    <!-- Movie Header -->
+                    <div class="relative h-96">
+                        <img 
+                            src="https://pixabay.com/get/gc012abc60df6fa8730ae9a779ca52f5e3e9e6c3abffc8115551d9835d6566a0182603806d6c212c5e226535b24e2c31a40967e638cc3d88e36bd9c7e5729e300_1280.jpg" 
+                            alt="Movie backdrop" 
+                            class="w-full h-full object-cover"
+                            data-mock-image="true"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                        
+                        <button class="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        
+                        <div class="absolute bottom-8 left-8 right-8">
+                            <div class="flex flex-col md:flex-row items-start md:items-end space-y-4 md:space-y-0 md:space-x-8">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=450" 
+                                    alt="Movie poster" 
+                                    class="w-48 h-72 object-cover rounded-lg shadow-xl"
+                                    data-mock-image="true"
+                                />
+                                <div class="flex-1 text-white">
+                                    <h1 class="text-3xl md:text-5xl font-bold mb-2" data-bind="movie.title">Spider-Man: No Way Home</h1>
+                                    <div class="flex items-center space-x-4 mb-4">
+                                        <span class="flex items-center">
+                                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                            <span data-bind="movie.vote_average">8.2</span>
+                                        </span>
+                                        <span data-bind="movie.release_date">2021</span>
+                                        <span data-bind="movie.runtime">148 min</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2 mb-4">
+                                        <!-- @MAP: movie.genres.map(genre => ( -->
+                                        <span class="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm" data-bind="genre.name">Action</span>
+                                        <!-- @END_MAP )) -->
+                                        <span class="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm">Adventure</span>
+                                        <span class="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm">Sci-Fi</span>
+                                    </div>
+                                    <button class="px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center">
+                                        <i class="fas fa-play mr-2"></i>
+                                        Play Trailer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Movie Details Content -->
+                    <div class="p-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div class="lg:col-span-2">
+                                <h2 class="text-2xl font-bold mb-4">Storyline</h2>
+                                <p class="text-muted-foreground leading-relaxed mb-8" data-bind="movie.overview">
+                                    With Spider-Man's identity now revealed, Peter asks Doctor Strange for help. When a spell goes wrong, dangerous foes from other worlds start to appear, forcing Peter to discover what it truly means to be Spider-Man.
+                                </p>
+                                
+                                <!-- Cast Section -->
+                                <h2 class="text-2xl font-bold mb-4">Cast</h2>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                                    <!-- @MAP: movie.cast.slice(0, 8).map(actor => ( -->
+                                    <div class="text-center">
+                                        <img 
+                                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200" 
+                                            alt="Actor photo" 
+                                            class="w-16 h-16 rounded-full object-cover mx-auto mb-2"
+                                            data-mock-image="true"
+                                        />
+                                        <h4 class="font-medium text-sm" data-bind="actor.name">Tom Holland</h4>
+                                        <p class="text-xs text-muted-foreground" data-bind="actor.character">Peter Parker</p>
+                                    </div>
+                                    <!-- @END_MAP )) -->
+                                </div>
+                            </div>
+                            
+                            <div class="lg:col-span-1">
+                                <div class="bg-muted rounded-lg p-6">
+                                    <h3 class="font-bold mb-4">Movie Info</h3>
+                                    <div class="space-y-3 text-sm">
+                                        <div>
+                                            <span class="text-muted-foreground">Release Date:</span>
+                                            <span class="ml-2" data-bind="movie.release_date">December 17, 2021</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-muted-foreground">Runtime:</span>
+                                            <span class="ml-2" data-bind="movie.runtime">2h 28m</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-muted-foreground">Budget:</span>
+                                            <span class="ml-2" data-bind="movie.budget">$200M</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-muted-foreground">Revenue:</span>
+                                            <span class="ml-2" data-bind="movie.revenue">$1.9B</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-muted-foreground">Director:</span>
+                                            <span class="ml-2" data-bind="movie.director">Jon Watts</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: MovieDetailsModal -->
+
+    </main>
+
+    <!-- @COMPONENT: Footer -->
+    <footer class="bg-secondary border-t border-border py-12">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-6 h-6 bg-gradient-to-r from-red-500 to-blue-500 rounded flex items-center justify-center">
+                            <i class="fas fa-film text-white text-xs"></i>
+                        </div>
+                        <span class="text-lg font-bold text-foreground">CineVerse</span>
+                    </div>
+                    <p class="text-muted-foreground text-sm leading-relaxed">
+                        Your ultimate destination for movie discovery, powered by TMDb.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4 text-foreground">Movies</h4>
+                    <ul class="space-y-2 text-sm text-muted-foreground">
+                        <li><a href="#" class="hover:text-primary transition-colors">Popular</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Trending</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Top Rated</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Upcoming</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4 text-foreground">Support</h4>
+                    <ul class="space-y-2 text-sm text-muted-foreground">
+                        <li><a href="#" class="hover:text-primary transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Terms of Service</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4 text-foreground">Connect</h4>
+                    <div class="flex space-x-3">
+                        <a href="#" class="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
+                            <i class="fab fa-twitter text-sm"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
+                            <i class="fab fa-facebook text-sm"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
+                            <i class="fab fa-instagram text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
+                <p>&copy; 2024 CineVerse. Powered by TMDb API. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        // Theme toggle functionality
+        (function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+            const icon = themeToggle.querySelector('i');
+            
+            // Check for saved theme preference or default to 'dark'
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            body.setAttribute('data-theme', currentTheme);
+            
+            // Update icon based on current theme
+            if (currentTheme === 'light') {
+                icon.className = 'fas fa-sun text-muted-foreground hover:text-foreground transition-colors';
+            } else {
+                icon.className = 'fas fa-moon text-muted-foreground hover:text-foreground transition-colors';
+            }
+            
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Update icon
+                if (newTheme === 'light') {
+                    icon.className = 'fas fa-sun text-muted-foreground hover:text-foreground transition-colors';
+                } else {
+                    icon.className = 'fas fa-moon text-muted-foreground hover:text-foreground transition-colors';
+                }
+            });
+        })();
+
+        // Search functionality placeholder
+        (function() {
+            const searchInput = document.querySelector('input[type="text"]');
+            const searchDropdown = document.querySelector('.search-dropdown');
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.trim();
+                
+                // Clear previous timeout
+                clearTimeout(searchTimeout);
+                
+                if (query.length < 3) {
+                    searchDropdown.classList.add('hidden');
+                    return;
+                }
+                
+                // Debounce search with 800ms delay
+                searchTimeout = setTimeout(() => {
+                    // TODO: Implement TMDb API search call
+                    console.log('Searching for:', query);
+                    searchDropdown.classList.remove('hidden');
+                }, 800);
+            });
+            
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                    searchDropdown.classList.add('hidden');
+                }
+            });
+        })();
+
+        // Movie card click handlers
+        document.querySelectorAll('.movie-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // TODO: Navigate to movie details page or show modal
+                console.log('Movie clicked');
+                document.getElementById('movie-details-modal').classList.remove('hidden');
+            });
+        });
+
+        // Modal close functionality
+        document.querySelector('#movie-details-modal button').addEventListener('click', function() {
+            document.getElementById('movie-details-modal').classList.add('hidden');
+        });
+
+        // Close modal when clicking backdrop
+        document.getElementById('movie-details-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

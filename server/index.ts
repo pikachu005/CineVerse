@@ -6,15 +6,16 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   const path = req.path;
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
+  // Bind the original json to preserve 'this' and keep signature as (body?: any)
+  const originalResJson = res.json.bind(res) as (body?: any) => Response;
+  res.json = function (bodyJson: any): Response {
     capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
+    return originalResJson(bodyJson);
   };
 
   res.on("finish", () => {
@@ -44,7 +45,10 @@ app.use((req, res, next) => {
     const message = err.message || "Internal Server Error";
 
     res.status(status).json({ message });
-    throw err;
+    // Do not rethrow after sending the response; log instead to avoid crashing the server
+    const source = "error";
+    const details = err?.stack ? `\n${err.stack}` : "";
+    log(`${status} ${message}${details}`, source);
   });
 
   // importantly only setup vite in development and after
