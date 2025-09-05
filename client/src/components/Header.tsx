@@ -2,7 +2,7 @@ import { Moon, Sun, Film } from 'lucide-react';
 import { Link } from 'wouter';
 import { SearchBar } from './SearchBar';
 import { useThemeContext } from './ThemeProvider';
-import logoPath from '@assets/CineVerseLogo_1757056535117.png';
+import logoPath from '@assets/CineVerseLogo_1757067894514.png';
 
 export function Header() {
   const { theme, toggleTheme } = useThemeContext();

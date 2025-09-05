@@ -4,7 +4,7 @@ import { Search } from 'lucide-react';
 import { Link } from 'wouter';
 import { useDebounce } from '@/hooks/useDebounce';
 import { tmdbClient } from '@/lib/tmdb';
-import { Movie } from '@/lib/types';
+import { MultiSearchResult } from '@/lib/types';
 
 export function SearchBar() {
   const [query, setQuery] = useState('');
@@ -14,7 +14,7 @@ export function SearchBar() {
 
   const { data: searchResults, isLoading } = useQuery({
     queryKey: ['search', debouncedQuery],
-    queryFn: () => tmdbClient.searchMovies(debouncedQuery),
+    queryFn: () => tmdbClient.searchMulti(debouncedQuery),
     enabled: debouncedQuery.length >= 3,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -68,32 +68,48 @@ export function SearchBar() {
               Searching...
             </div>
           ) : searchResults?.results.length ? (
-            searchResults.results.slice(0, 8).map((movie: Movie) => (
-              <Link
-                key={movie.id}
-                href={`/movie/${movie.id}`}
-                onClick={handleMovieClick}
-                data-testid={`link-movie-${movie.id}`}
-              >
-                <div className="flex items-center p-3 hover:bg-muted cursor-pointer transition-colors">
-                  <img
-                    src={tmdbClient.getPosterUrl(movie.poster_path, 'w185')}
-                    alt={movie.title}
-                    className="w-12 h-16 object-cover rounded mr-3"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = 'https://via.placeholder.com/92x138?text=No+Image';
-                    }}
-                  />
-                  <div className="flex-1">
-                    <h4 className="font-medium text-foreground">{movie.title}</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {movie.release_date ? new Date(movie.release_date).getFullYear() : 'Unknown'}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            ))
+            searchResults.results
+              .filter(item => item.media_type !== 'person')
+              .slice(0, 8)
+              .map((item: MultiSearchResult) => {
+                const title = item.title || item.name || 'Unknown';
+                const year = item.release_date 
+                  ? new Date(item.release_date).getFullYear()
+                  : item.first_air_date 
+                    ? new Date(item.first_air_date).getFullYear()
+                    : 'Unknown';
+                const href = item.media_type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`;
+                
+                return (
+                  <Link
+                    key={`${item.media_type}-${item.id}`}
+                    href={href}
+                    onClick={handleMovieClick}
+                    data-testid={`link-${item.media_type}-${item.id}`}
+                  >
+                    <div className="flex items-center p-3 hover:bg-muted cursor-pointer transition-colors">
+                      <img
+                        src={tmdbClient.getPosterUrl(item.poster_path, 'w185')}
+                        alt={title}
+                        className="w-12 h-16 object-cover rounded mr-3"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = 'https://via.placeholder.com/92x138?text=No+Image';
+                        }}
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium text-foreground">{title}</h4>
+                          <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded">
+                            {item.media_type === 'movie' ? 'Movie' : 'TV'}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{year}</p>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })
           ) : (
             <div className="p-3 text-center text-muted-foreground">
               No results found

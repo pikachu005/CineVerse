@@ -1,0 +1,125 @@
+1) Hero Section
+
+Background: Use the hero image (as before, centered, not cropped from top, responsive).
+
+Overlay text:
+
+“Welcome to CineVerse – Your Gateway to the World of Cinema!”
+
+Text should have a gradient color mix of Pink → Aqua → Deep Yellow.
+
+Gradient should animate smoothly across the letters (CSS gradient text).
+
+Keep the typewriter effect: text types letter by letter → pause 5 sec → deletes letter by letter → repeats infinitely.
+
+2) Home Page Sections
+
+Just below the hero:
+
+Popular Movies (via TMDb API)
+
+Trending Content
+
+Movies Trending (Daily & Weekly) → /trending/movie/day and /trending/movie/week
+
+TV Shows Trending (Daily & Weekly) → /trending/tv/day and /trending/tv/week
+
+Trending Web Series (pull from TMDb TV endpoints, classify as web series if available).
+
+Categories by region:
+
+Hollywood → with_origin_country=US
+
+Bollywood → with_origin_country=IN
+
+Tollywood → with_origin_country=IN (filter Telugu/Tamil if possible).
+
+Display Style
+
+Each item (movie/TV/web series) should appear as a card: poster, title, rating.
+
+Clicking a card → opens Movie/TV Details page.
+
+Popular Trailers Section
+
+Fetch trailers from /movie/{id}/videos.
+
+Display YouTube embedded trailers in a slider/carousel style.
+
+3) Search Functionality
+
+Search should support movies, TV shows, and web series.
+
+Use TMDb search endpoints: /search/multi (to include all types).
+
+Results show in a dropdown with type labels (Movie, TV, Series).
+
+Apply debounce (800ms) for API calls (as described earlier).
+
+4) About Us Page (Separate Page)
+
+Dedicated /about route/page (not inside homepage).
+
+Content:
+
+Overview of CineVerse features (discover Hollywood/Bollywood/Tollywood, trending, trailers, cast & crew, genres, ratings).
+
+Line: “Powered by TMDb”.
+
+Line: “Developed by Ram Krishna Jha”.
+
+5) Contact Us Page (Separate Page)
+
+Dedicated /contact route/page (not inside homepage).
+
+Contact Form:
+
+Name (text)
+
+Surname (text)
+
+Email (email validation)
+
+Message (textarea)
+
+Send Message button (with success/error state).
+
+6) Footer (Improved, Consistent Across All Pages)
+
+Footer should be present on all pages: Home, Movie Details, About Us, Contact Us.
+
+Footer includes:
+
+Navigation links: Home | Movie Details | About Us | Contact Us
+
+Copyright: © 2025 CineVerse. All rights reserved.
+
+Clean design with responsive layout.
+
+7) Movie/Series Details Page
+
+Show details from /movie/{id} or /tv/{id}:
+
+Poster, Title, Trailer, Rating, Storyline, Cast, Crew, Genres, Runtime, Release Date, Budget/Revenue (if movie).
+
+Below details → “More Like This” section:
+
+Fetch similar items by genre + release year.
+
+Display related movies/series in a horizontal scrollable list.
+
+8) Logo Update
+
+Use the new logo image you provided as the official CineVerse logo.
+
+Remove old logo.
+
+Keep logo in the header (scaled larger, responsive).
+
+9) Global Requirements
+
+Fully responsive (mobile, tablet, desktop).
+
+Support Dark/Light mode toggle with animated transition and preference saved in localStorage.
+
+Semantic HTML + Accessibility (aria labels, keyboard navigation).

@@ -51,10 +51,10 @@ export function TypingAnimation({ text, className = '' }: TypingAnimationProps) 
   }, []);
 
   return (
-    <span className={className}>
+    <span className={`${className} bg-gradient-to-r from-pink-500 via-cyan-400 to-yellow-400 bg-clip-text text-transparent animate-gradient-x`}>
       {displayedText}
       <span 
-        className={`inline-block w-0.5 h-[1em] bg-current ml-1 transition-opacity duration-100 ${
+        className={`inline-block w-0.5 h-[1em] bg-gradient-to-r from-pink-500 via-cyan-400 to-yellow-400 ml-1 transition-opacity duration-100 ${
           showCursor ? 'opacity-100' : 'opacity-0'
         }`}
         aria-hidden="true"
